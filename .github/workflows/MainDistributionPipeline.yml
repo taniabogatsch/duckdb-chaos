@@ -17,7 +17,7 @@ jobs:
     name: Build extension binaries
     uses: duckdb/extension-ci-tools/.github/workflows/_extension_distribution.yml@main
     with:
-      duckdb_version: "stable-thin"
+      duckdb_version: 48e8a356e6a7364a5f8d8a684b255ed838ded7d1
       ci_tools_version: main
       extension_name: duckdb_chaos
       override_repository: taniabogatsch/duckdb
