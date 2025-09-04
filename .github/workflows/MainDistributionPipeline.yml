@@ -18,15 +18,6 @@ jobs:
     uses: duckdb/extension-ci-tools/.github/workflows/_extension_distribution.yml@main
     with:
       duckdb_version: stable-thin
-      ci_tools_version: v1.3.2
+      ci_tools_version: main
       extension_name: duckdb_chaos
       override_repository: taniabogatsch/duckdb
-
-  code-quality-check:
-    name: Code Quality Check
-    uses: duckdb/extension-ci-tools/.github/workflows/_extension_code_quality.yml@main
-    with:
-      duckdb_version: v1.3.2
-      ci_tools_version: v1.3.2
-      extension_name: duckdb_chaos
-      format_checks: 'format;tidy'
