@@ -4,9 +4,59 @@ This repository is based on https://github.com/duckdb/extension-template, check 
 
 ---
 
-#### 🚧 WORK IN PROGRESS 🚧
+### 🚧 WORK IN PROGRESS 🚧
 
-DuckdbChaos allow you to invoke exceptions and signals.
+DuckDBChaos allow you to invoke exceptions and signals.
+
+#### Exceptions
+
+```sql
+SELECT duckdb_chaos_exception('hello', 'CATALOG');
+Catalog Error:
+hello
+```
+
+```sql
+SELECT duckdb_chaos_exception('hello', 'INTERNAL');
+INTERNAL Error:
+hello
+
+Stack Trace:
+
+0        duckdb::Exception::Exception(duckdb::ExceptionType, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) + 64
+1        duckdb::DuckDBChaosExceptionFun(duckdb::DataChunk&, duckdb::ExpressionState&, duckdb::Vector&)::'lambda'(duckdb::string_t, duckdb::string_t)::operator()(duckdb::string_t, duckdb::string_t) const + 376
+...
+```
+
+```sql
+SELECT duckdb_chaos_exception('hello', 'FATAL');
+FATAL Error:
+Failed: database has been invalidated because of a previous fatal error. The database must be restarted prior to being used again.
+Original error: "hello"
+
+Stack Trace:
+
+0        duckdb::Exception::Exception(duckdb::ExceptionType, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) + 64
+1        duckdb::FatalException::FatalException(duckdb::ExceptionType, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) + 12
+...
+```
+
+#### Signals
+
+```sql
+SELECT duckdb_chaos_signal('SIGSEGV');
+zsh: segmentation fault  build/release/duckdb
+```
+
+```sql
+SELECT duckdb_chaos_signal('SIGABRT');
+zsh: abort      build/release/duckdb
+```
+
+```sql
+SELECT duckdb_chaos_signal('SIGBUS');
+zsh: bus error  build/release/duckdb
+```
 
 
 ## Building
