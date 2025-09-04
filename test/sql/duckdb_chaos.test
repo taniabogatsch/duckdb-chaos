@@ -2,17 +2,20 @@
 # description: test duckdb_chaos extension
 # group: [sql]
 
-# Before we load the extension, this will fail
-statement error
-SELECT duckdb_chaos('Sam');
-----
-Catalog Error: Scalar Function with name duckdb_chaos does not exist!
+# # Before we load the extension, this will fail.
+# statement error
+# SELECT duckdb_chaos_exception('hello world', 'OUT_OF_MEMORY');
+# ----
+# Catalog Error
 
-# Require statement will ensure this test is run with this extension loaded
 require duckdb_chaos
 
-# Confirm the extension works
-query I
-SELECT duckdb_chaos('Sam');
+statement error
+SELECT duckdb_chaos_exception('hello world', 'unknown type');
 ----
-DuckdbChaos Sam 🐥
+Not implemented Error
+
+statement error
+SELECT duckdb_chaos_exception('hello world', 'OUT_OF_MEMORY');
+----
+Out of Memory Error
