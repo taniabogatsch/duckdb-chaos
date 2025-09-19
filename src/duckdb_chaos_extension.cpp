@@ -1,10 +1,8 @@
-#define DUCKDB_EXTENSION_MAIN
-
 #include "duckdb.hpp"
 #include "duckdb/common/exception.hpp"
 #include "duckdb/common/string_util.hpp"
 #include "duckdb/function/scalar_function.hpp"
-#include "duckdb/main/extension_util.hpp"
+#include "duckdb/main/extension/extension_loader.hpp"
 #include "duckdb_chaos_extension.hpp"
 #include <duckdb/parser/parsed_data/create_scalar_function_info.hpp>
 
@@ -57,24 +55,24 @@ inline void DuckDBChaosSignalFun(DataChunk &args, ExpressionState &state, Vector
 	    });
 }
 
-static void LoadInternal(DatabaseInstance &instance) {
+static void LoadInternal(ExtensionLoader &loader) {
 	// Register a scalar function to throw an exception.
 	ScalarFunction exception_fun("duckdb_chaos_exception", {LogicalType::VARCHAR, LogicalType::VARCHAR},
 	                             LogicalType::SQLNULL, DuckDBChaosExceptionFun);
 	exception_fun.stability = FunctionStability::VOLATILE;
 	BaseScalarFunction::SetReturnsError(exception_fun);
-	ExtensionUtil::RegisterFunction(instance, exception_fun);
+	loader.RegisterFunction(exception_fun);
 
 	// Register a scalar function to invoke a signal.
 	ScalarFunction signal_fun("duckdb_chaos_signal", {LogicalType::VARCHAR}, LogicalType::SQLNULL,
 	                          DuckDBChaosSignalFun);
 	signal_fun.stability = FunctionStability::VOLATILE;
 	BaseScalarFunction::SetReturnsError(signal_fun);
-	ExtensionUtil::RegisterFunction(instance, signal_fun);
+	loader.RegisterFunction(signal_fun);
 }
 
-void DuckdbChaosExtension::Load(DuckDB &db) {
-	LoadInternal(*db.instance);
+void DuckdbChaosExtension::Load(ExtensionLoader &loader) {
+	LoadInternal(loader);
 }
 std::string DuckdbChaosExtension::Name() {
 	return "duckdb_chaos";
@@ -92,16 +90,8 @@ std::string DuckdbChaosExtension::Version() const {
 
 extern "C" {
 
-DUCKDB_EXTENSION_API void duckdb_chaos_init(duckdb::DatabaseInstance &db) {
-	duckdb::DuckDB db_wrapper(db);
-	db_wrapper.LoadExtension<duckdb::DuckdbChaosExtension>();
+DUCKDB_CPP_EXTENSION_ENTRY(duckdb_chaos, loader) {
+	duckdb::LoadInternal(loader);
 }
 
-DUCKDB_EXTENSION_API const char *duckdb_chaos_version() {
-	return duckdb::DuckDB::LibraryVersion();
 }
-}
-
-#ifndef DUCKDB_EXTENSION_MAIN
-#error DUCKDB_EXTENSION_MAIN not defined
-#endif
