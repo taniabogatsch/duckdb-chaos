@@ -93,5 +93,4 @@ extern "C" {
 DUCKDB_CPP_EXTENSION_ENTRY(duckdb_chaos, loader) {
 	duckdb::LoadInternal(loader);
 }
-
 }
