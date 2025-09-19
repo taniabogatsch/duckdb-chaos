@@ -30,18 +30,18 @@ inline void DuckDBChaosExceptionFun(DataChunk &args, ExpressionState &state, Vec
 	auto &message_col = args.data[0];
 	auto &exception_type_col = args.data[1];
 
-	BinaryExecutor::Execute<string_t, string_t, string_t>(
-	    message_col, exception_type_col, result, args.size(),
-	    [&](string_t message, string_t exception_type_str) -> string_t {
-		    auto exception_type = EnumUtil::FromString<ExceptionType>(exception_type_str.GetString());
-		    throw Exception(exception_type, message.GetString());
-	    });
+	BinaryExecutor::Execute<string_t, string_t, uint8_t>(message_col, exception_type_col, result, args.size(),
+	                                                     [&](string_t message, string_t exception_type_str) -> uint8_t {
+		                                                     auto exception_type = EnumUtil::FromString<ExceptionType>(
+		                                                         exception_type_str.GetString());
+		                                                     throw Exception(exception_type, message.GetString());
+	                                                     });
 }
 
 inline void DuckDBChaosSignalFun(DataChunk &args, ExpressionState &state, Vector &result) {
 	auto &signal_col = args.data[0];
-	UnaryExecutor::Execute<string_t, string_t>(
-	    signal_col, result, args.size(), [&](string_t signal_type_str) -> string_t {
+	UnaryExecutor::Execute<string_t, uint8_t>(
+	    signal_col, result, args.size(), [&](string_t signal_type_str) -> uint8_t {
 		    auto signal_type = SignalTypeFromString(signal_type_str.GetString());
 		    switch (signal_type) {
 		    case SignalType::SIGNAL_SIGSEGV:
@@ -58,13 +58,13 @@ inline void DuckDBChaosSignalFun(DataChunk &args, ExpressionState &state, Vector
 static void LoadInternal(ExtensionLoader &loader) {
 	// Register a scalar function to throw an exception.
 	ScalarFunction exception_fun("duckdb_chaos_exception", {LogicalType::VARCHAR, LogicalType::VARCHAR},
-	                             LogicalType::SQLNULL, DuckDBChaosExceptionFun);
+	                             LogicalType::UTINYINT, DuckDBChaosExceptionFun);
 	exception_fun.stability = FunctionStability::VOLATILE;
 	BaseScalarFunction::SetReturnsError(exception_fun);
 	loader.RegisterFunction(exception_fun);
 
 	// Register a scalar function to invoke a signal.
-	ScalarFunction signal_fun("duckdb_chaos_signal", {LogicalType::VARCHAR}, LogicalType::SQLNULL,
+	ScalarFunction signal_fun("duckdb_chaos_signal", {LogicalType::VARCHAR}, LogicalType::UTINYINT,
 	                          DuckDBChaosSignalFun);
 	signal_fun.stability = FunctionStability::VOLATILE;
 	BaseScalarFunction::SetReturnsError(signal_fun);
