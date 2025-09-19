@@ -18,7 +18,7 @@ jobs:
     with:
       duckdb_version: main
       ci_tools_version: main
-      extension_name: duckdb_chaos
+      extension_name: chaos
 
   duckdb-stable-build:
     name: Build extension binaries
@@ -26,7 +26,7 @@ jobs:
     with:
       duckdb_version: v1.4.0
       ci_tools_version: v1.4.0
-      extension_name: duckdb_chaos
+      extension_name: chaos
 
   code-quality-check:
     name: Code Quality Check
@@ -34,5 +34,5 @@ jobs:
     with:
       duckdb_version: v1.4.0
       ci_tools_version: v1.4.0
-      extension_name: duckdb_chaos
+      extension_name: chaos
       format_checks: 'format;tidy'

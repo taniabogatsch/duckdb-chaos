@@ -4,7 +4,7 @@
 
 namespace duckdb {
 
-class DuckdbChaosExtension : public Extension {
+class ChaosExtension : public Extension {
 public:
 	void Load(ExtensionLoader &loader) override;
 	std::string Name() override;

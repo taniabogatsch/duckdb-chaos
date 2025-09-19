@@ -3,7 +3,7 @@
 #include "duckdb/common/string_util.hpp"
 #include "duckdb/function/scalar_function.hpp"
 #include "duckdb/main/extension/extension_loader.hpp"
-#include "duckdb_chaos_extension.hpp"
+#include "chaos_extension.hpp"
 #include <duckdb/parser/parsed_data/create_scalar_function_info.hpp>
 
 #include <signal.h>
@@ -26,7 +26,7 @@ static SignalType SignalTypeFromString(const string &signal_type_str) {
 	                            signal_type_str);
 }
 
-inline void DuckDBChaosExceptionFun(DataChunk &args, ExpressionState &state, Vector &result) {
+inline void ChaosExceptionFun(DataChunk &args, ExpressionState &state, Vector &result) {
 	auto &message_col = args.data[0];
 	auto &exception_type_col = args.data[1];
 
@@ -38,7 +38,7 @@ inline void DuckDBChaosExceptionFun(DataChunk &args, ExpressionState &state, Vec
 	                                                     });
 }
 
-inline void DuckDBChaosSignalFun(DataChunk &args, ExpressionState &state, Vector &result) {
+inline void ChaosSignalFun(DataChunk &args, ExpressionState &state, Vector &result) {
 	auto &signal_col = args.data[0];
 	UnaryExecutor::Execute<string_t, uint8_t>(
 	    signal_col, result, args.size(), [&](string_t signal_type_str) -> uint8_t {
@@ -61,30 +61,29 @@ throw Exception(ExceptionType::NOT_IMPLEMENTED, "signals are not supported for W
 
 static void LoadInternal(ExtensionLoader &loader) {
 	// Register a scalar function to throw an exception.
-	ScalarFunction exception_fun("duckdb_chaos_exception", {LogicalType::VARCHAR, LogicalType::VARCHAR},
-	                             LogicalType::UTINYINT, DuckDBChaosExceptionFun);
+	ScalarFunction exception_fun("chaos_exception", {LogicalType::VARCHAR, LogicalType::VARCHAR}, LogicalType::UTINYINT,
+	                             ChaosExceptionFun);
 	exception_fun.stability = FunctionStability::VOLATILE;
 	BaseScalarFunction::SetReturnsError(exception_fun);
 	loader.RegisterFunction(exception_fun);
 
 	// Register a scalar function to invoke a signal.
-	ScalarFunction signal_fun("duckdb_chaos_signal", {LogicalType::VARCHAR}, LogicalType::UTINYINT,
-	                          DuckDBChaosSignalFun);
+	ScalarFunction signal_fun("chaos_signal", {LogicalType::VARCHAR}, LogicalType::UTINYINT, ChaosSignalFun);
 	signal_fun.stability = FunctionStability::VOLATILE;
 	BaseScalarFunction::SetReturnsError(signal_fun);
 	loader.RegisterFunction(signal_fun);
 }
 
-void DuckdbChaosExtension::Load(ExtensionLoader &loader) {
+void ChaosExtension::Load(ExtensionLoader &loader) {
 	LoadInternal(loader);
 }
-std::string DuckdbChaosExtension::Name() {
-	return "duckdb_chaos";
+std::string ChaosExtension::Name() {
+	return "chaos";
 }
 
-std::string DuckdbChaosExtension::Version() const {
-#ifdef EXT_VERSION_DUCKDB_CHAOS
-	return EXT_VERSION_DUCKDB_CHAOS;
+std::string ChaosExtension::Version() const {
+#ifdef EXT_VERSION_CHAOS
+	return EXT_VERSION_CHAOS;
 #else
 	return "";
 #endif
@@ -94,7 +93,7 @@ std::string DuckdbChaosExtension::Version() const {
 
 extern "C" {
 
-DUCKDB_CPP_EXTENSION_ENTRY(duckdb_chaos, loader) {
+DUCKDB_CPP_EXTENSION_ENTRY(chaos, loader) {
 	duckdb::LoadInternal(loader);
 }
 }

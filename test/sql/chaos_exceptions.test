@@ -1,0 +1,24 @@
+# name: test/sql/chaos_exceptions.test
+# description: Test the chaos exceptions.
+# group: [sql]
+
+# Extension not yet loaded.
+
+statement error
+SELECT chaos_exception('hello world', 'OUT_OF_MEMORY');
+----
+Catalog Error
+
+# Now load the extension and test.
+
+require chaos
+
+statement error
+SELECT chaos_exception('hello world', 'unknown type');
+----
+Not implemented Error
+
+statement error
+SELECT chaos_exception('hello world', 'OUT_OF_MEMORY');
+----
+Out of Memory Error

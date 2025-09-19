@@ -11,13 +11,13 @@ DuckDBChaos allow you to invoke exceptions and signals.
 #### Exceptions
 
 ```sql
-SELECT duckdb_chaos_exception('hello', 'CATALOG');
+SELECT chaos_exception('hello', 'CATALOG');
 Catalog Error:
 hello
 ```
 
 ```sql
-SELECT duckdb_chaos_exception('hello', 'INTERNAL');
+SELECT chaos_exception('hello', 'INTERNAL');
 INTERNAL Error:
 hello
 
@@ -29,7 +29,7 @@ Stack Trace:
 ```
 
 ```sql
-SELECT duckdb_chaos_exception('hello', 'FATAL');
+SELECT chaos_exception('hello', 'FATAL');
 FATAL Error:
 Failed: database has been invalidated because of a previous fatal error. The database must be restarted prior to being used again.
 Original error: "hello"
@@ -44,17 +44,17 @@ Stack Trace:
 #### Signals
 
 ```sql
-SELECT duckdb_chaos_signal('SIGSEGV');
+SELECT chaos_signal('SIGSEGV');
 zsh: segmentation fault  build/release/duckdb
 ```
 
 ```sql
-SELECT duckdb_chaos_signal('SIGABRT');
+SELECT chaos_signal('SIGABRT');
 zsh: abort      build/release/duckdb
 ```
 
 ```sql
-SELECT duckdb_chaos_signal('SIGBUS');
+SELECT chaos_signal('SIGBUS');
 zsh: bus error  build/release/duckdb
 ```
 
@@ -74,12 +74,12 @@ The main binaries that will be built are:
 ```sh
 ./build/release/duckdb
 ./build/release/test/unittest
-./build/release/extension/duckdb_chaos/duckdb_chaos.duckdb_extension
+./build/release/extension/chaos/chaos.duckdb_extension
 ```
 
 - `duckdb` is the binary for the duckdb shell with the extension code automatically loaded.
 - `unittest` is the test runner of duckdb. Again, the extension is already linked into the binary.
-- `duckdb_chaos.duckdb_extension` is the loadable binary as it would be distributed.
+- `chaos.duckdb_extension` is the loadable binary as it would be distributed.
 
 ## Running the extension
 
@@ -124,6 +124,6 @@ DuckDB. To specify a specific version, you can pass the version instead.
 
 After running these steps, you can install and load your extension using the regular INSTALL/LOAD commands in DuckDB:
 ```sql
-INSTALL duckdb_chaos
-LOAD duckdb_chaos
+INSTALL chaos
+LOAD chaos
 ```
