@@ -42,6 +42,7 @@ inline void DuckDBChaosSignalFun(DataChunk &args, ExpressionState &state, Vector
 	auto &signal_col = args.data[0];
 	UnaryExecutor::Execute<string_t, uint8_t>(
 	    signal_col, result, args.size(), [&](string_t signal_type_str) -> uint8_t {
+#ifndef _WIN32
 		    auto signal_type = SignalTypeFromString(signal_type_str.GetString());
 		    switch (signal_type) {
 		    case SignalType::SIGNAL_SIGSEGV:
@@ -52,6 +53,9 @@ inline void DuckDBChaosSignalFun(DataChunk &args, ExpressionState &state, Vector
 			    raise(SIGBUS);
 		    }
 		    throw InternalException("missing case for signal type: %s", signal_type_str.GetString());
+#else
+throw Exception(ExceptionType::NOT_IMPLEMENTED, "signals are not supported for Windows");
+#endif
 	    });
 }
 
