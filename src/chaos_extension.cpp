@@ -30,7 +30,7 @@ inline void ChaosExceptionFun(DataChunk &args, ExpressionState &state, Vector &r
 	auto &message_col = args.data[0];
 	auto &exception_type_col = args.data[1];
 
-	if (message_col.GetType().id() == LogicalTypeId::USER) {
+	if (message_col.GetType().id() == LogicalTypeId::UNBOUND) {
 		throw InternalException("cannot handle USER type here");
 	}
 
