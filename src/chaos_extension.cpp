@@ -30,6 +30,10 @@ inline void ChaosExceptionFun(DataChunk &args, ExpressionState &state, Vector &r
 	auto &message_col = args.data[0];
 	auto &exception_type_col = args.data[1];
 
+	if (message_col.GetType().id() == LogicalTypeId::USER) {
+		throw InternalException("cannot handle USER type here");
+	}
+
 	BinaryExecutor::Execute<string_t, string_t, uint8_t>(message_col, exception_type_col, result, args.size(),
 	                                                     [&](string_t message, string_t exception_type_str) -> uint8_t {
 		                                                     auto exception_type = EnumUtil::FromString<ExceptionType>(
